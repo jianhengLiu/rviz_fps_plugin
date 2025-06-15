@@ -56,6 +56,7 @@ static const float PITCH_LIMIT_LOW = -Ogre::Math::HALF_PI + 0.001;
 static const float PITCH_LIMIT_HIGH = Ogre::Math::HALF_PI - 0.001;
 
 FPSMotionViewController::FPSMotionViewController()
+  : nh_("")
 {
   yaw_property_ = new FloatProperty( "Yaw", 0, "Rotation of the camera around the Z (up) axis.", this );
   pitch_property_ = new FloatProperty( "Pitch", 0, "How much the camera is tipped downward.", this);
@@ -64,6 +65,7 @@ FPSMotionViewController::FPSMotionViewController()
 
   position_property_ = new VectorProperty( "Position", Ogre::Vector3( 5, 5, 10 ), "Position of the camera.", this );
 
+  placement_pub_ = nh_.advertise<geometry_msgs::Pose>("/rviz/current_camera_pose", 1);
 }
 
 FPSMotionViewController::~FPSMotionViewController()
@@ -177,6 +179,16 @@ void FPSMotionViewController::updateCamera()
 {
   camera_->setOrientation( getOrientation() );
   camera_->setPosition( position_property_->getVector() );
+
+  geometry_msgs::Pose cam_pose;
+  cam_pose.position.x = camera_->getPosition().x;
+  cam_pose.position.y = camera_->getPosition().y;
+  cam_pose.position.z = camera_->getPosition().z;
+  cam_pose.orientation.w = camera_->getOrientation().w;
+  cam_pose.orientation.x = camera_->getOrientation().x;
+  cam_pose.orientation.y = camera_->getOrientation().y;
+  cam_pose.orientation.z = camera_->getOrientation().z;
+  placement_pub_.publish(cam_pose);
 }
 
 void FPSMotionViewController::updateCamera(Ogre::Vector3& position, Ogre::Quaternion& orientation )

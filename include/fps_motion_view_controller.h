@@ -34,6 +34,7 @@
 #include <OgreQuaternion.h>
 
 #include "rviz/frame_position_tracking_view_controller.h"
+#include <ros/ros.h>
 
 using namespace rviz;
 
@@ -91,6 +92,9 @@ protected:
   FloatProperty* pitch_property_;                       ///< The camera's pitch (rotation around the x-axis), in radians
   VectorProperty* position_property_;
   BoolProperty* fly_property_;
+
+  ros::NodeHandle nh_;
+  ros::Publisher placement_pub_;
 };
 
 } // end namespace rviz
